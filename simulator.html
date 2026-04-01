@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Coin Flip Simulator</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            background: #0f172a;
+            color: #e2e8f0;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        button {
+            padding: 1rem 2rem;
+            font-size: 1rem;
+            background: #38bdf8;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .result {
+            margin-top: 2rem;
+            font-size: 1.2rem;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Coin Flip Simulator</h1>
+<p>Simulate 10,000 coin flips and estimate P(X > 5200)</p>
+
+<button onclick="runSimulation()">Run Simulation</button>
+
+<div class="result" id="output"></div>
+
+<script>
+function runSimulation() {
+    const nFlips = 10000;
+    const nTrials = 2000;
+    const threshold = 5200;
+
+    let count = 0;
+
+    for (let i = 0; i < nTrials; i++) {
+        let heads = 0;
+
+        for (let j = 0; j < nFlips; j++) {
+            if (Math.random() < 0.5) heads++;
+        }
+
+        if (heads > threshold) count++;
+    }
+
+    const prob = count / nTrials;
+
+    document.getElementById("output").innerHTML =
+        `Estimated Probability: ${prob.toFixed(6)}`;
+}
+</script>
+
+</body>
+</html>
