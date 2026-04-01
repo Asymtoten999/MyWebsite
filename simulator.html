@@ -11,6 +11,8 @@
       color: #e2e8f0;
       text-align: center;
       padding: 2rem;
+      max-width: 1000px;
+      margin: auto;
     }
     input, button {
       padding: 0.8rem 1.2rem;
@@ -30,6 +32,27 @@
     canvas {
       margin-top: 2rem;
     }
+    .summary {
+      text-align: left;
+      margin-top: 3rem;
+      padding: 1rem;
+      background: #1e293b;
+      border-radius: 8px;
+    }
+    .summary h2 {
+      color: #38bdf8;
+    }
+    .summary p, .summary li {
+      line-height: 1.5;
+    }
+    .summary ul {
+      padding-left: 1.5rem;
+    }
+    code {
+      background: #334155;
+      padding: 2px 4px;
+      border-radius: 4px;
+    }
   </style>
 </head>
 <body>
@@ -46,6 +69,59 @@
 <div class="result" id="output"></div>
 
 <canvas id="chart" width="800" height="400"></canvas>
+
+<!-- Summary section -->
+<div class="summary">
+  <h2>Summary:</h2>
+  <p>This project explores probability through large-scale coin flips, comparing empirical simulation with analytical approximation using the Central Limit Theorem (CLT). Users can interact with the simulation, see the distribution of outcomes, and understand the relationship between random experiments and theoretical predictions.</p>
+  
+  <h3>🧠 What the project does</h3>
+  <ul>
+    <li>Simulates many coin flips: each trial flips a fair coin <code>n</code> times (e.g., 10,000) and repeats many trials (e.g., 2,000).</li>
+    <li>Calculates probability of a rare event (e.g., more than 5200 heads) via:
+      <ul>
+        <li>Simulation (Monte Carlo)</li>
+        <li>Analytical CLT approximation</li>
+      </ul>
+    </li>
+    <li>Visualizes outcomes with a histogram of simulation results and an overlay of the theoretical bell curve.</li>
+    <li>Interactive web demo: clicking "Run Simulation" computes results and updates the chart dynamically.</li>
+  </ul>
+
+  <h3>📊 Key Concepts Demonstrated</h3>
+  <ul>
+    <li>Randomness / Law of Large Numbers: multiple coin flip trials converge to predictable distribution.</li>
+    <li>Binomial Distribution: flipping a coin <code>n</code> times follows <code>Binomial(n, p)</code>.</li>
+    <li>Central Limit Theorem (CLT): binomial distribution approximates normal for large <code>n</code>.</li>
+    <li>Simulation vs Theory: Monte Carlo probability vs analytical probability.</li>
+    <li>Rare Event Probability: extreme outcomes (e.g., &gt;4σ) are very unlikely; simulation struggles.</li>
+  </ul>
+
+  <h3>🔢 Mathematical Details</h3>
+  <ul>
+    <li><strong>Binomial Distribution:</strong> X ~ Binomial(n, p) with μ = n*p, σ = sqrt(n*p*(1-p))</li>
+    <li><strong>CLT Normal Approximation:</strong> Z = (X - μ)/σ → P(X &gt; k) ≈ P(Z &gt; (k-μ)/σ)</li>
+    <li>Example: k = 5200, n = 10000, p = 0.5 → Z ≈ 4 → probability ≈ 0.00003</li>
+    <li>Simulation: P(X &gt; k) ≈ (# of trials where heads &gt; k) / total trials</li>
+  </ul>
+
+  <h3>💻 Implementation</h3>
+  <ul>
+    <li><strong>JavaScript:</strong> browser simulation and probability calculation</li>
+    <li><strong>Chart.js:</strong> dynamic histogram + bell curve</li>
+    <li><strong>HTML + CSS:</strong> interactive front-end</li>
+    <li>How it works:
+      <ul>
+        <li>Click "Run Simulation"</li>
+        <li>JavaScript runs <code>nTrials</code> simulations of <code>nFlips</code> coin flips</li>
+        <li>Calculates simulated probability and CLT probability</li>
+        <li>Builds histogram of results</li>
+        <li>Overlays theoretical bell curve</li>
+        <li>Displays results and chart dynamically</li>
+      </ul>
+    </li>
+  </ul>
+</div>
 
 <script>
 function runSimulation() {
@@ -82,9 +158,9 @@ function runSimulation() {
   // Display probabilities
   const output = document.getElementById("output");
   output.innerHTML = `
-    Simulated P(X &gt; ${threshold}): ${simulatedProb.toFixed(6)}<br>
-    CLT Approximation: ${analyticalProb.toFixed(6)}
-  `;
+  Simulated P(X &gt; ${threshold}): ${simulatedProb.toFixed(6)} (${(simulatedProb*100).toFixed(4)}%)<br>
+  CLT Approximation: ${analyticalProb.toFixed(6)} (${(analyticalProb*100).toFixed(4)}%)
+`;
 
   // Prepare histogram
   const min = Math.min(...results);
