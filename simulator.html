@@ -1,31 +1,33 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Coin Flip Simulator</title>
-    <style>
-        body {
-            font-family: sans-serif;
-            background: #0f172a;
-            color: #e2e8f0;
-            text-align: center;
-            padding: 2rem;
-        }
-
-        button {
-            padding: 1rem 2rem;
-            font-size: 1rem;
-            background: #38bdf8;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-        }
-
-        .result {
-            margin-top: 2rem;
-            font-size: 1.2rem;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <title>Coin Flip Simulator</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #0f172a;
+      color: #e2e8f0;
+      text-align: center;
+      padding: 2rem;
+    }
+    button {
+      padding: 1rem 2rem;
+      font-size: 1rem;
+      background: #38bdf8;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    .result {
+      margin-top: 1rem;
+      font-size: 1.2rem;
+    }
+    canvas {
+      margin-top: 2rem;
+    }
+  </style>
 </head>
 <body>
 
@@ -36,28 +38,104 @@
 
 <div class="result" id="output"></div>
 
+<canvas id="chart" width="800" height="400"></canvas>
+
 <script>
 function runSimulation() {
-    const nFlips = 10000;
-    const nTrials = 2000;
-    const threshold = 5200;
+  const nFlips = 10000;
+  const nTrials = 2000;
+  const threshold = 5200;
+  let results = [];
 
-    let count = 0;
-
-    for (let i = 0; i < nTrials; i++) {
-        let heads = 0;
-
-        for (let j = 0; j < nFlips; j++) {
-            if (Math.random() < 0.5) heads++;
-        }
-
-        if (heads > threshold) count++;
+  // Run simulation
+  let countAbove = 0;
+  for (let i = 0; i < nTrials; i++) {
+    let heads = 0;
+    for (let j = 0; j < nFlips; j++) {
+      if (Math.random() < 0.5) heads++;
     }
+    results.push(heads);
+    if (heads > threshold) countAbove++;
+  }
 
-    const prob = count / nTrials;
+  const simulatedProb = countAbove / nTrials;
 
-    document.getElementById("output").innerHTML =
-        `Estimated Probability: ${prob.toFixed(6)}`;
+  // CLT analytical
+  const mu = nFlips * 0.5;
+  const sigma = Math.sqrt(nFlips * 0.5 * 0.5);
+  const z = (threshold - mu) / sigma;
+  const analyticalProb = 1 - normalCDF(z);
+
+  // Display probabilities
+  document.getElementById("output").innerHTML = 
+    `Simulated P(X > ${threshold}): ${simulatedProb.toFixed(6)}<br>` +
+    `CLT Approximation: ${analyticalProb.toFixed(6)}`;
+
+  // Prepare histogram data
+  const min = Math.min(...results);
+  const max = Math.max(...results);
+  const bins = 50;
+  const binWidth = (max - min) / bins;
+  let hist = Array(bins).fill(0);
+  results.forEach(val => {
+    let idx = Math.floor((val - min) / binWidth);
+    if (idx >= bins) idx = bins - 1;
+    hist[idx]++;
+  });
+  const labels = Array.from({length: bins}, (_, i) => Math.round(min + i*binWidth));
+  
+  // Normal distribution overlay
+  let normalData = labels.map(x => (1/(sigma*Math.sqrt(2*Math.PI))) * Math.exp(-0.5 * Math.pow((x-mu)/sigma,2)) * nTrials * binWidth);
+
+  // Draw chart
+  const ctx = document.getElementById('chart').getContext('2d');
+  if (window.myChart) window.myChart.destroy();
+  window.myChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: labels,
+      datasets: [
+        {
+          type: 'bar',
+          label: 'Simulation',
+          data: hist,
+          backgroundColor: 'rgba(56, 189, 248, 0.6)',
+        },
+        {
+          type: 'line',
+          label: 'Normal Approximation',
+          data: normalData,
+          borderColor: 'red',
+          borderWidth: 2,
+          fill: false,
+          tension: 0.1,
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { labels: { color: '#e2e8f0' } } },
+      scales: {
+        x: { ticks: { color: '#e2e8f0' } },
+        y: { ticks: { color: '#e2e8f0' } }
+      }
+    }
+  });
+}
+
+// Standard normal CDF approximation
+function normalCDF(x) {
+  return 0.5 * (1 + erf(x / Math.sqrt(2)));
+}
+
+function erf(x) {
+  // Abramowitz & Stegun approximation
+  const t = 1/(1 + 0.5 * Math.abs(x));
+  const tau = t * Math.exp(-x*x -1.26551223 + 1.00002368*t + 0.37409196*t**2 +
+                           0.09678418*t**3 - 0.18628806*t**4 + 0.27886807*t**5 -
+                           1.13520398*t**6 + 1.48851587*t**7 - 0.82215223*t**8 +
+                           0.17087277*t**9);
+  return x >= 0 ? 1 - tau : tau - 1;
 }
 </script>
 
