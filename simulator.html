@@ -96,7 +96,7 @@
   <h2>Summary:</h2>
   <p>This project explores probability through large-scale coin flips, comparing empirical simulation with analytical approximation using the Central Limit Theorem (CLT). Users can interact with the simulation, see the distribution of outcomes, and understand the relationship between random experiments and theoretical predictions.</p>
   
-  <h3>🧠 What the project does</h3>
+  <h3>What the project does</h3>
   <ul>
     <li>Simulates many coin flips: each trial flips a fair coin <code>n</code> times (e.g., 10,000) and repeats many trials (e.g., 2,000).</li>
     <li>Calculates probability of a rare event (e.g., more than 5200 heads) via:
@@ -109,7 +109,7 @@
     <li>Interactive web demo: clicking "Run Simulation" computes results and updates the chart dynamically.</li>
   </ul>
 
-  <h3>📊 Key Concepts Demonstrated</h3>
+  <h3>Key Concepts Demonstrated</h3>
   <ul>
     <li>Randomness / Law of Large Numbers: multiple coin flip trials converge to predictable distribution.</li>
     <li>Binomial Distribution: flipping a coin <code>n</code> times follows <code>Binomial(n, p)</code>.</li>
@@ -118,7 +118,7 @@
     <li>Rare Event Probability: extreme outcomes (e.g., &gt;4σ) are very unlikely; simulation struggles.</li>
   </ul>
 
-  <h3>🔢 Mathematical Details</h3>
+  <h3>Mathematical Details</h3>
   <ul>
     <li><strong>Binomial Distribution:</strong> X ~ Binomial(n, p) with μ = n*p, σ = sqrt(n*p*(1-p))</li>
     <li><strong>CLT Normal Approximation:</strong> Z = (X - μ)/σ → P(X &gt; k) ≈ P(Z &gt; (k-μ)/σ)</li>
@@ -126,7 +126,7 @@
     <li>Simulation: P(X &gt; k) ≈ (# of trials where heads &gt; k) / total trials</li>
   </ul>
 
-  <h3>💻 Implementation</h3>
+  <h3>Implementation</h3>
   <ul>
     <li><strong>JavaScript:</strong> browser simulation and probability calculation</li>
     <li><strong>Chart.js:</strong> dynamic histogram + bell curve</li>
